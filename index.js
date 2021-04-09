@@ -32,7 +32,8 @@ client.connect(err => {
 
 
     app.get('/products', (req, res) => {
-      productsCollection.find({})
+      const search = req.query.search;
+      productsCollection.find({name: {$regex: search}})
       .toArray( (err, documents) =>{
         res.send(documents)
       })
@@ -43,6 +44,14 @@ client.connect(err => {
       productsCollection.find({key: req.params.key})
       .toArray( (err, documents) =>{
         res.send(documents[0])
+      })
+    })
+
+    app.post('/productsByKeys', (req, res) => {
+      const productKeys = req.body;
+      productsCollection.find({key: { $in: productKeys}})
+      .toArray( (err, documents) => {
+        res.send(documents);
       })
     })
 
